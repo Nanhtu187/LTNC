@@ -11,6 +11,9 @@ class Game{
 public:
 
 	Game();
+
+	int waitEvent();
+
 	void display();
 
 	void loop();

@@ -2,6 +2,7 @@
 #define _RENDERWINDOW_H
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -10,6 +11,7 @@ class RenderWindow{
 private:
 	SDL_Renderer* renderer;
 	SDL_Window* window;
+	TTF_Font* font;
 public:
 	RenderWindow(string title, int W, int H);
 	RenderWindow();
@@ -19,6 +21,7 @@ public:
 	void display();
 	void render(SDL_Texture* tex);
 	void render(SDL_Texture* tex, SDL_Rect rect);
+	void render(string text, int _x, int _y);
 };
 
 #endif
