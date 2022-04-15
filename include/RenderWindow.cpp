@@ -68,8 +68,7 @@ void RenderWindow::render(SDL_Texture* tex){
 	SDL_RenderCopy(renderer, tex, NULL, NULL);
 }
 
-void RenderWindow::render(string text, int _x, int _y){
-    SDL_Color fg = { 243, 156, 18 };
+void RenderWindow::render(string text, int _x, int _y, SDL_Color fg){
     SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), fg);
     SDL_SetColorKey( surface, SDL_TRUE, SDL_MapRGB( surface->format, 0, 0xFF, 0xFF ) );
     SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, surface );

@@ -15,6 +15,7 @@ Bird bird(200, 300, 70);
 RenderWindow window("test", WINDOW_WIDTH, WINDOW_HEIGHT);
 vector<Entity> entity;
 int score = -1;
+int best_score = -1;
 SDL_Event e;
 
 string to_String(int x){
@@ -74,8 +75,7 @@ void Game::start(){
 	bird.reset(200, 300, 50);
 	entity.clear();
 	window.render(menu);
-	window.render("click to start", 600, 500);
-	if(score != -1) window.render("Score:" + to_String(score), 600, 400);
+	window.render("click to start", 600, 500, {243, 156, 18});
 	window.display();
 	score = 0;
 	int sign = waitEvent();
@@ -138,6 +138,10 @@ void Game::loop(){
 		Update();
 		if(!notLose()) quit = 1;
 	}
+	best_score = max(best_score, score);
+	window.render("Score:" + to_String(score), 600, 400, {255 , 255, 255});
+	window.render("Best score:" + to_String(best_score), 600, 600, {255 , 255, 255});
+	window.display();
 	int sign = waitEvent();
 	if(sign == 1) {
 		start();

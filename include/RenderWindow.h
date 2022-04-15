@@ -21,7 +21,7 @@ public:
 	void display();
 	void render(SDL_Texture* tex);
 	void render(SDL_Texture* tex, SDL_Rect rect);
-	void render(string text, int _x, int _y);
+	void render(string text, int _x, int _y, SDL_Color fg);
 };
 
 #endif
