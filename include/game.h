@@ -11,8 +11,19 @@ class Game{
 public:
 
 	Game();
+	~Game();
+
+	void Menu();
+
+	void instruction();
+
+	void Sound();
+
+	void afterLose();
 
 	int waitEvent();
+
+	int getAction();
 
 	void display();
 

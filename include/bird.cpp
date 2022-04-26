@@ -4,6 +4,7 @@ using namespace std;
 
 void Bird::move(){
 	(this->rect).y += dist;
+	(this->rect).y = max(0, (this->rect).y);
 }
 
 Bird::Bird(int _x, int _y, int _size){
@@ -17,7 +18,7 @@ Bird::Bird(int _x, int _y, int _size){
 Bird::Bird(){}
 
 bool Bird::inside(int w, int h){
-	return (this->rect).x >= 0 && (this->rect).y >= 0 &&  (this->rect).x + (this->rect).w <= w &&  (this->rect).y + (this->rect).h <= h;
+	return (this->rect).x + (this->rect).w <= w &&  (this->rect).y + (this->rect).h <= h;
 }
 
 void Bird::reset(int _x, int _y, int _size){

@@ -13,7 +13,7 @@ Entity::Entity(SDL_Rect _rect, int _type){
 }
 
 Entity::Entity(){
-	Entity x({1600, Rand(900), 50, 50}, Rand(4) != 2);
+	Entity x({1080, Rand(720), 50, 50}, Rand(4) != 2);
 	this -> rect = x.rect;
 	this -> type = x.type;
 }

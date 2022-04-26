@@ -3,13 +3,17 @@
 using namespace std;
 
 static SDL_Texture *backgr;
-static SDL_Texture *flap;
+static SDL_Texture *plane;
 static SDL_Texture *menu;
+static SDL_Texture *instruction_button;
+static SDL_Texture *sound_button;
+static SDL_Texture *quit_button;
+static SDL_Texture *replay_button;
 static SDL_Texture *bullet;
 static SDL_Texture *petrol_tank;
-static SDL_Texture *gunshot;
+static SDL_Texture *start_button;
 
-int WINDOW_WIDTH = 1600, WINDOW_HEIGHT = 900;
+const int WINDOW_WIDTH = 1080, WINDOW_HEIGHT = 720;
 
 Bird bird(200, 300, 70);
 RenderWindow window("test", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -29,19 +33,40 @@ string to_String(int x){
 	return res;
 }
 
+
+
 Game::Game(){
 	backgr = window.loadTexture("res/art/tex_bckgnd.png");
-	flap = window.loadTexture("res/art/plane.png");
-	menu = window.loadTexture("res/art/tex_menu.png");
+	plane = window.loadTexture("res/art/plane.png");
+	//menu = window.loadTexture("res/art/tex_menu.png");
 	bullet = window.loadTexture("res/art/bullet.png");
 	petrol_tank = window.loadTexture("res/art/petroltank.png");
-	gunshot = window.loadTexture("res/art/gunshot.png");
+	start_button = window.loadTexture("res/art/start.png");
+	instruction_button = window.loadTexture("res/art/instruction.png");
+	sound_button = window.loadTexture("res/art/sound.png");
+	replay_button = window.loadTexture("res/art/replay.png");
+}
 
+Game::~Game(){
+	SDL_DestroyTexture(backgr);
+	SDL_DestroyTexture(plane);
+	SDL_DestroyTexture(menu);
+	SDL_DestroyTexture(bullet);
+	SDL_DestroyTexture(petrol_tank);
+	SDL_DestroyTexture(start_button);
+}
+
+void Game::Sound(){
+
+}
+
+void Game::instruction(){
+	
 }
 
 void Game::display(){
 	window.render(backgr);
-	window.render(flap, bird.rect);
+	window.render(plane, bird.rect);
 	for(auto x: entity){
 		if(x.type == 1){
 			window.render(bullet, x.rect);
@@ -51,6 +76,31 @@ void Game::display(){
 		}
 	}
 	window.display();
+}
+
+int Game::getAction(){
+	while(SDL_PollEvent(&e));
+	int x, y;
+	bool quit = false;
+	while(quit == false)
+	{
+   	 	while(SDL_PollEvent(&e) != 0)
+    	{
+    		if(e.type == SDL_QUIT) return 0;
+        	if(e.type == SDL_MOUSEBUTTONDOWN)
+        	{		
+         	   SDL_GetMouseState(&x,&y);
+         	   cout << x << ' ' << y << '\n';
+        	}
+        	else continue;
+        	if(200 <= x && 400 >= x && 200 <= y && 300 >= y){
+        		return 1;
+        	}
+        	if(700 <= x && 900 >= x && 200 <= y && 300 >= y){
+        		return 2;
+        	}
+    	}
+	}	
 }
 
 int Game::waitEvent(){
@@ -71,22 +121,37 @@ int Game::waitEvent(){
 	//return 0;
 }
 
+void Game::Menu(){
+	window.render(backgr);
+	window.render(start_button, {200, 200, 200, 100});
+	window.render(instruction_button, {700, 200, 200, 100});
+	window.display();
+	int quit = false;
+	while(!quit){
+		int sign = getAction();
+		if(sign == 0){
+			end();
+			quit = 1;
+		}
+		else if(sign == 1){
+			start();
+			quit = 1;
+		}
+		else if(sign == 2){
+			instruction();
+			quit = 1;
+		}
+		else if(sign == 3){
+			Sound();
+		}
+	}
+}
+
 void Game::start(){
 	bird.reset(200, 300, 50);
 	entity.clear();
-	window.render(menu);
-	window.render("click to start", 600, 500, {243, 156, 18});
-	window.display();
 	score = 0;
-	int sign = waitEvent();
-	if(sign == 0){
-		end();
-		return;
-	}
-	else {
-		loop();
-		return;
-	}
+	loop();
 
 }
 
@@ -138,12 +203,16 @@ void Game::loop(){
 		Update();
 		if(!notLose()) quit = 1;
 	}
+	afterLose();
+}
+
+void Game::afterLose(){
 	best_score = max(best_score, score);
 	window.render("Score:" + to_String(score), 600, 400, {255 , 255, 255});
 	window.render("Best score:" + to_String(best_score), 600, 600, {255 , 255, 255});
 	window.display();
-	int sign = waitEvent();
-	if(sign == 1) {
+	int sign = getAction();
+	if(sign == 3) {
 		start();
 		return;
 	}
