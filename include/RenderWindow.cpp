@@ -14,9 +14,14 @@ RenderWindow::RenderWindow(string title, int W, int H) :window(NULL), renderer(N
     {
         SDL_Log("%s", TTF_GetError());
     }
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+    {
+        SDL_Log("%s", Mix_GetError());
+    }
     font = TTF_OpenFont("res/font/VeraMoBd.ttf", 30);
+
 	
-}
+} 
 
 SDL_Texture* RenderWindow::loadTexture(string path){
     SDL_Texture* newTexture = NULL;
@@ -88,4 +93,27 @@ void RenderWindow::render(string text, int _x, int _y, SDL_Color fg){
     SDL_RenderCopy(renderer, texture, &srcRest, &desRect);
     //SDL_RenderPresent(renderer);
     SDL_DestroyTexture(texture);
+}
+
+void RenderWindow::musicPlay(Mix_Music *music){
+    if(!Mix_PlayingMusic()){
+        Mix_PlayMusic(music, -1);
+    }
+    else{
+        Mix_HaltMusic();
+    }
+}
+
+void RenderWindow::chunkPlay(Mix_Chunk *chunk){
+    if(Mix_PlayingMusic()){
+        Mix_PlayChannel(-1, chunk, 0);
+    }
+}
+
+Mix_Music *RenderWindow::loadMusic(string path){
+    return Mix_LoadMUS(path.c_str());
+}
+
+Mix_Chunk *RenderWindow::loadChunk(string path){
+    return Mix_LoadWAV(path.c_str());
 }

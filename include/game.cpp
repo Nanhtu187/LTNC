@@ -5,13 +5,21 @@ using namespace std;
 static SDL_Texture *backgr;
 static SDL_Texture *plane;
 static SDL_Texture *menu;
-static SDL_Texture *instruction_button;
 static SDL_Texture *sound_button;
+static SDL_Texture *nosound_button;
 static SDL_Texture *quit_button;
 static SDL_Texture *replay_button;
 static SDL_Texture *bullet;
 static SDL_Texture *petrol_tank;
 static SDL_Texture *start_button;
+static SDL_Texture *score_tex;
+
+static Mix_Music *bckgrSound;
+static Mix_Chunk *clickSound;
+static Mix_Chunk *dieSound;
+static Mix_Chunk *scoreSound;
+static Mix_Chunk *explorationSound;
+
 
 const int WINDOW_WIDTH = 1080, WINDOW_HEIGHT = 720;
 
@@ -20,6 +28,7 @@ RenderWindow window("test", WINDOW_WIDTH, WINDOW_HEIGHT);
 vector<Entity> entity;
 int score = -1;
 int best_score = -1;
+int isPlayingMusic = 1;
 SDL_Event e;
 
 string to_String(int x){
@@ -42,9 +51,17 @@ Game::Game(){
 	bullet = window.loadTexture("res/art/bullet.png");
 	petrol_tank = window.loadTexture("res/art/petroltank.png");
 	start_button = window.loadTexture("res/art/start.png");
-	instruction_button = window.loadTexture("res/art/instruction.png");
 	sound_button = window.loadTexture("res/art/sound.png");
+	nosound_button = window.loadTexture("res/art/start.png");
 	replay_button = window.loadTexture("res/art/replay.png");
+	score_tex = window.loadTexture("res/art/score.png");
+
+	bckgrSound = window.loadMusic("res/sound/bckgrSound.mp3");
+	dieSound = window.loadChunk("res/sound/dieSound.wav");
+	scoreSound = window.loadChunk("res/sound/scoreSound.wav");
+	clickSound = window.loadChunk("res/sound/clickSound.wav");
+	explorationSound = window.loadChunk("res/sound/explorationSound.wav");
+	Sound();
 }
 
 Game::~Game(){
@@ -54,14 +71,14 @@ Game::~Game(){
 	SDL_DestroyTexture(bullet);
 	SDL_DestroyTexture(petrol_tank);
 	SDL_DestroyTexture(start_button);
+	SDL_DestroyTexture(sound_button);
+	SDL_DestroyTexture(replay_button);
+	SDL_DestroyTexture(score_tex);
 }
 
 void Game::Sound(){
-
-}
-
-void Game::instruction(){
-	
+	isPlayingMusic ^= 1;
+	window.musicPlay(bckgrSound);
 }
 
 void Game::display(){
@@ -84,47 +101,37 @@ int Game::getAction(){
 	bool quit = false;
 	while(quit == false)
 	{
-   	 	while(SDL_PollEvent(&e) != 0)
+		SDL_Delay(10);
+   	 	if(SDL_PollEvent(&e) != 0)
     	{
     		if(e.type == SDL_QUIT) return 0;
         	if(e.type == SDL_MOUSEBUTTONDOWN)
         	{		
-         	   SDL_GetMouseState(&x,&y);
-         	   cout << x << ' ' << y << '\n';
+        		window.chunkPlay(clickSound);
+         	   	SDL_GetMouseState(&x,&y);
+         	   	//cout << x << ' ' << y << '\n';
         	}
         	else continue;
-        	if(200 <= x && 400 >= x && 200 <= y && 300 >= y){
+        	if(400 <= x && 600 >= x && 200 <= y && 400 >= y){
         		return 1;
         	}
-        	if(700 <= x && 900 >= x && 200 <= y && 300 >= y){
+        	if(900 <= x && x <= 1000 && 600 <= y && y <= 700){
         		return 2;
+        	}
+        	if(450 <= x && 550 >= x && 400 <= y && 500 >= y){
+        		return 3;
         	}
     	}
 	}	
 }
 
-int Game::waitEvent(){
-	while(SDL_PollEvent(&e));
-	while(1){
-		if(!SDL_PollEvent(&e)) {
-			continue;
-		}
-		switch (e.type){
-			case SDL_QUIT:{
-				return 0;
-			}
-			case SDL_MOUSEBUTTONDOWN:{
-				return 1;
-			}
-		}
-	}
-	//return 0;
-}
 
 void Game::Menu(){
+	window.clear();
 	window.render(backgr);
-	window.render(start_button, {200, 200, 200, 100});
-	window.render(instruction_button, {700, 200, 200, 100});
+	window.render(start_button, {400, 200, 200, 200});
+	if(isPlayingMusic) window.render(sound_button, {900, 600, 100, 100});
+	else window.render(nosound_button, {900, 600, 100, 100});
 	window.display();
 	int quit = false;
 	while(!quit){
@@ -138,11 +145,9 @@ void Game::Menu(){
 			quit = 1;
 		}
 		else if(sign == 2){
-			instruction();
-			quit = 1;
-		}
-		else if(sign == 3){
 			Sound();
+			Menu();
+			quit = 1;
 		}
 	}
 }
@@ -156,15 +161,15 @@ void Game::start(){
 }
 
 bool intersect(SDL_Rect a, SDL_Rect b){
-	int x1 = a.x, x2 = b.x, y1 = a.y, y2 = b.y, w1 = a.w, w2 = b.w, h1 = a.h, h2 = b.h;
-	return ((x1+w1 >= x2) && (x2+w2 >= x1) && (y1+h1 >= y2) && (y2+h2 >= y1));
-
+	int x1 = a.x, x2 = b.x, y1 = a.y, y2 = b.y, w1 = a.x + a.w, w2 = b.x + b.w, h1 = a.y + a.h, h2 = b.y + b.h;
+	return !(x1 > w2 || x2 > w1 || y1 > h2 || y2 > h1);
 }
 
 void Game::Update(){
-	SDL_Delay(50);
+	SDL_Delay(20);
 	if(SDL_PollEvent(&e) && e.type == SDL_MOUSEBUTTONDOWN){
-		bird.dist = -10;
+		bird.dist = -15;
+		window.chunkPlay(clickSound);
 	}
 	else {
 		bird.dist += 2;
@@ -176,6 +181,7 @@ void Game::Update(){
 			if((*x).type == 0){
 				entity.erase(x);
 				++ score;
+				window.chunkPlay(scoreSound);
 			}
 		}
 		++ x;
@@ -198,6 +204,7 @@ void Game::Update(){
 void Game::loop(){
 	int quit = 0;
 	while(!quit){
+		SDL_Delay(10);
 		bird.move();
 		display();
 		Update();
@@ -208,17 +215,29 @@ void Game::loop(){
 
 void Game::afterLose(){
 	best_score = max(best_score, score);
-	window.render("Score:" + to_String(score), 600, 400, {255 , 255, 255});
-	window.render("Best score:" + to_String(best_score), 600, 600, {255 , 255, 255});
+	window.render(score_tex, {200, 200, 200, 100});
+	window.render(score_tex, {600, 200, 325, 100});
+	window.render("Score:" + to_String(score), 230, 230, {0 , 0, 0, 120});
+	window.render("Best score:" + to_String(best_score), 650, 230, {0 , 0, 0, 120});
+	window.render(replay_button, {450, 400, 100, 100});
+	if(isPlayingMusic) window.render(sound_button, {900, 600, 100, 100});
+	else window.render(nosound_button, {900, 600, 100, 100});
 	window.display();
-	int sign = getAction();
-	if(sign == 3) {
-		start();
-		return;
-	}
-	else {
-		end();
-		return;
+	while(1){
+		int sign = getAction();
+		if(sign == 3) {
+			start();
+			return;
+		}
+		else if(sign == 0){
+			end();
+			return;
+		}
+		else if(sign == 2){
+			Sound();
+			afterLose();
+			return;
+		}
 	}
 }
 
@@ -232,8 +251,13 @@ bool Game::notLose(){
 		if(intersect(bird.rect, x.rect)){
 			if(x.type == 1){
 				ok = 0;
+				window.chunkPlay(explorationSound);
 			}
 		}
 	}
-	return ok && bird.inside(WINDOW_WIDTH, WINDOW_HEIGHT);
+	if(!bird.inside(WINDOW_WIDTH, WINDOW_HEIGHT)){
+		window.chunkPlay(dieSound);
+		return 0;
+	}
+	return ok;
 }

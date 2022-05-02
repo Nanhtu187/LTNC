@@ -3,6 +3,6 @@ CFLAGS=
 CC=g++
 
 all:
-	g++ -Iinclude -Iinclude/SDL2 -Iinclude/headers -Llib -o Main include/bird.cpp include/RenderWindow.cpp include/entity.cpp include/game.cpp src/*.cpp -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+	g++ -Iinclude -Iinclude/SDL2 -Iinclude/headers -Llib -o Main include/bird.cpp include/RenderWindow.cpp include/entity.cpp include/game.cpp src/*.cpp -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 #%.o : %.cpp  
 #	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@   
