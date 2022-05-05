@@ -28,7 +28,7 @@ RenderWindow window("test", WINDOW_WIDTH, WINDOW_HEIGHT);
 vector<Entity> entity;
 int score = -1;
 int best_score = -1;
-int isPlayingMusic = 1;
+int isPlayingMusic = 0;
 SDL_Event e;
 
 string to_String(int x){
@@ -52,7 +52,7 @@ Game::Game(){
 	petrol_tank = window.loadTexture("res/art/petroltank.png");
 	start_button = window.loadTexture("res/art/start.png");
 	sound_button = window.loadTexture("res/art/sound.png");
-	nosound_button = window.loadTexture("res/art/start.png");
+	nosound_button = window.loadTexture("res/art/nosound.png");
 	replay_button = window.loadTexture("res/art/replay.png");
 	score_tex = window.loadTexture("res/art/score.png");
 
