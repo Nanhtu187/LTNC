@@ -5,8 +5,11 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <bits/stdc++.h>
+//#include <game.h>
 
 using namespace std;
+
+static const int WINDOW_WIDTH = 1080, WINDOW_HEIGHT = 720;
 
 class RenderWindow{
 private:
@@ -23,6 +26,7 @@ public:
 	void clear();	
 	void display();
 	void render(SDL_Texture* tex);
+	void render(SDL_Texture* tex, int posX);
 	void render(SDL_Texture* tex, SDL_Rect rect);
 	void render(string text, int _x, int _y, SDL_Color fg);
 	void musicPlay(Mix_Music* music);

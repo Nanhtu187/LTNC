@@ -73,6 +73,17 @@ void RenderWindow::render(SDL_Texture* tex){
 	SDL_RenderCopy(renderer, tex, NULL, NULL);
 }
 
+void RenderWindow::render(SDL_Texture* tex, int posX){
+    SDL_Rect rect;
+    rect.x = posX;
+    rect.y = 0;
+
+    rect.w = WINDOW_WIDTH;
+    rect.h = WINDOW_HEIGHT;
+    SDL_RenderCopy(renderer, tex, NULL, &rect);
+}
+
+
 void RenderWindow::render(string text, int _x, int _y, SDL_Color fg){
     SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), fg);
     SDL_SetColorKey( surface, SDL_TRUE, SDL_MapRGB( surface->format, 0, 0xFF, 0xFF ) );

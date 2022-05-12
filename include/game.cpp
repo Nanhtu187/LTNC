@@ -2,27 +2,6 @@
 
 using namespace std;
 
-static SDL_Texture *backgr;
-static SDL_Texture *plane;
-static SDL_Texture *menu;
-static SDL_Texture *sound_button;
-static SDL_Texture *nosound_button;
-static SDL_Texture *quit_button;
-static SDL_Texture *replay_button;
-static SDL_Texture *bullet;
-static SDL_Texture *petrol_tank;
-static SDL_Texture *start_button;
-static SDL_Texture *score_tex;
-
-static Mix_Music *bckgrSound;
-static Mix_Chunk *clickSound;
-static Mix_Chunk *dieSound;
-static Mix_Chunk *scoreSound;
-static Mix_Chunk *explorationSound;
-
-
-const int WINDOW_WIDTH = 1080, WINDOW_HEIGHT = 720;
-
 Bird bird(200, 300, 70);
 RenderWindow window("test", WINDOW_WIDTH, WINDOW_HEIGHT);
 vector<Entity> entity;
@@ -45,9 +24,8 @@ string to_String(int x){
 
 
 Game::Game(){
-	backgr = window.loadTexture("res/art/tex_bckgnd.png");
+	backgr = window.loadTexture("res/art/tex_bckgr.png");
 	plane = window.loadTexture("res/art/plane.png");
-	//menu = window.loadTexture("res/art/tex_menu.png");
 	bullet = window.loadTexture("res/art/bullet.png");
 	petrol_tank = window.loadTexture("res/art/petroltank.png");
 	start_button = window.loadTexture("res/art/start.png");
@@ -82,7 +60,13 @@ void Game::Sound(){
 }
 
 void Game::display(){
-	window.render(backgr);
+	window.clear();
+
+	window.render(backgr, WINDOW_WIDTH-ScrollingBackgroundOffset);
+	window.render(backgr, 0-ScrollingBackgroundOffset);
+	ScrollingBackgroundOffset += ScrollingBackgroundSpeed;
+	if (ScrollingBackgroundOffset >= WINDOW_WIDTH) ScrollingBackgroundOffset = 0;
+
 	window.render(plane, bird.rect);
 	for(auto x: entity){
 		if(x.type == 1){
@@ -141,8 +125,10 @@ void Game::Menu(){
 			quit = 1;
 		}
 		else if(sign == 1){
+			SDL_Delay(200);
 			start();
 			quit = 1;
+
 		}
 		else if(sign == 2){
 			Sound();
@@ -192,7 +178,7 @@ void Game::Update(){
 	}
 	else {
 		auto x = entity[0];
-		if(x.rect.x <= 50) entity.erase(entity.begin());
+		if(x.rect.x <= -100) entity.erase(entity.begin());
 		x = entity[entity.size() - 1];
 		if(x.rect.x < WINDOW_WIDTH -  100){
 			Entity x;
@@ -226,6 +212,7 @@ void Game::afterLose(){
 	while(1){
 		int sign = getAction();
 		if(sign == 3) {
+			SDL_Delay(200);
 			start();
 			return;
 		}
