@@ -35,7 +35,7 @@ Game::Game(){
 	score_tex = window.loadTexture("res/art/score.png");
 
 	bckgrSound = window.loadMusic("res/sound/bckgrSound.mp3");
-	dieSound = window.loadChunk("res/sound/dieSound.wav");
+	dieSound = window.loadChunk("res/sound/explorationSound.wav");
 	scoreSound = window.loadChunk("res/sound/scoreSound.wav");
 	clickSound = window.loadChunk("res/sound/clickSound.wav");
 	explorationSound = window.loadChunk("res/sound/explorationSound.wav");
